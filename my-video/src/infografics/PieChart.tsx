@@ -6,7 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import { pie, arc } from 'd3-shape';
+import { pie, arc, PieArcDatum } from 'd3-shape';
 
 export interface PieDataItem {
   label: string;
@@ -15,11 +15,22 @@ export interface PieDataItem {
 }
 
 interface PieChartProps {
-  data: PieDataItem[];
+  data?: PieDataItem[];
   size?: number;
 }
 
-export const PieChart: React.FC<PieChartProps> = ({ data, size = 400 }) => {
+// Sample data matching the reference in assets/image1.png.
+const DEFAULT_DATA: PieDataItem[] = [
+  { label: 'Segment A', value: 32, color: '#b45cf6' },
+  { label: 'Segment B', value: 26, color: '#a855f7' },
+  { label: 'Segment C', value: 34, color: '#f7a01f' },
+  { label: 'Segment D', value: 8, color: '#3b8cf6' },
+];
+
+export const PieChart: React.FC<PieChartProps> = ({
+  data = DEFAULT_DATA,
+  size = 400,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -40,7 +51,7 @@ export const PieChart: React.FC<PieChartProps> = ({ data, size = 400 }) => {
   const outerRadius = size / 2;
   const innerRadius = 0; // Set > 0 (e.g. size / 4) for a Donut Chart
 
-  const arcGenerator = arc<any>()
+  const arcGenerator = arc<PieArcDatum<PieDataItem>>()
     .innerRadius(innerRadius)
     .outerRadius(outerRadius);
 

@@ -11,3 +11,6 @@ Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
 Config.setDefaultPremountInSeconds(2);
+// Draw frames with the GPU (DirectX via ANGLE on Windows) instead of software rendering.
+Config.setChromiumOpenGlRenderer("angle");
+Config.setPublicLicenseKey('free-license');

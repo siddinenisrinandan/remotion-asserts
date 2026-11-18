@@ -33,16 +33,8 @@ export const CrossOutText: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        // Checkerboard background to match the reference image context
-        backgroundColor: '#f0f0f0',
-        backgroundImage: `
-          linear-gradient(45deg, #e0e0e0 25%, transparent 25%), 
-          linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), 
-          linear-gradient(45deg, transparent 75%, #e0e0e0 75%), 
-          linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)
-        `,
-        backgroundSize: '40px 40px',
-        backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+        // Transparent so it can be layered over any video (Studio shows its own checkerboard)
+        backgroundColor: 'transparent',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

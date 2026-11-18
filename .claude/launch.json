@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "remotion-studio",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "my-video", "run", "dev", "--", "--port=3001", "--no-open"],
+      "port": 3001
+    }
+  ]
+}

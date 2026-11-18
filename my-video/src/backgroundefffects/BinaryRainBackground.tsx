@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   AbsoluteFill,
+  random,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
@@ -21,8 +22,8 @@ export const BinaryRainBackground: React.FC = () => {
       const delay = (i * 31) % 180;
 
       // Generate random 0s and 1s for this column stream
-      const bits = Array.from({ length }, () => 
-        Math.random() > 0.5 ? '1' : '0'
+      const bits = Array.from({ length }, (_, j) =>
+        random(`binary-${i}-${j}`) > 0.5 ? '1' : '0'
       );
 
       cols.push({ x, speed, length, delay, bits });

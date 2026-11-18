@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   AbsoluteFill,
+  Img,
   useCurrentFrame,
   useVideoConfig,
   spring,
@@ -35,16 +36,8 @@ export const CommentCardReveal: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        // Checkerboard background to match the reference image's transparent context
-        backgroundColor: '#e5e5e5',
-        backgroundImage: `
-          linear-gradient(45deg, #d4d4d4 25%, transparent 25%), 
-          linear-gradient(-45deg, #d4d4d4 25%, transparent 25%), 
-          linear-gradient(45deg, transparent 75%, #d4d4d4 75%), 
-          linear-gradient(-45deg, transparent 75%, #d4d4d4 75%)
-        `,
-        backgroundSize: '20px 20px',
-        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+        // Transparent so it can be layered over any video (Studio shows its own checkerboard)
+        backgroundColor: 'transparent',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         display: 'flex',
         alignItems: 'center',
@@ -87,7 +80,7 @@ export const CommentCardReveal: React.FC = () => {
               overflow: 'hidden',
             }}
           >
-            <img 
+            <Img
               src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" 
               alt="Avatar"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   AbsoluteFill,
+  random,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
@@ -22,8 +23,8 @@ export const MatrixRainBackground: React.FC = () => {
       const length = 16 + (i % 12);     // Longer character streams
       const delay = (i * 29) % 150;
 
-      const chars = Array.from({ length }, () => 
-        CHARS[Math.floor((i * 17 + Math.random() * 7) % CHARS.length)]
+      const chars = Array.from({ length }, (_, j) =>
+        CHARS[Math.floor((i * 17 + random(`matrix-${i}-${j}`) * 7) % CHARS.length)]
       );
 
       cols.push({ x, speed, length, delay, chars });

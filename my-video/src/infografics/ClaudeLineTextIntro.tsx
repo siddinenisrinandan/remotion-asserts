@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   AbsoluteFill,
-  Easing,
   interpolate,
   spring,
   useCurrentFrame,
@@ -17,7 +16,7 @@ const SUB_TEXT = 'MOTION DESIGN - SHOW';
 
 export const ClaudeLineTextIntro: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
+  const { fps, width } = useVideoConfig();
 
   // -----------------------------------------------------------------------
   // 1. STEP 1: SMOOTH CENTER YELLOW LINE EXPANSION (FRAME 0+)

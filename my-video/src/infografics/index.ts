@@ -10,6 +10,7 @@ export * from './DottedRadialChart';
 export * from './DualRadialRingChart';
 export * from './Exploded3DPieChart';
 export * from './MultiLineChart';
+export * from './PieChart';
 export * from './PyramidInfographic';
 export * from './RadialProgressChart';
 export * from './SemiCircleSlicesInfographic';

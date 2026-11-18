@@ -5,7 +5,7 @@ import {
   interpolate,
   spring,
   useCurrentFrame,
-  useVideoConfig, Sequence,
+  useVideoConfig,
 } from 'remotion';
 
 interface Props {

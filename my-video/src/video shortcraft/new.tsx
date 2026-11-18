@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
 
 interface Pose {
   x: number;

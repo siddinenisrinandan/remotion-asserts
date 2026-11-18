@@ -37,7 +37,6 @@ export const TriangleChart: React.FC = () => {
   // Inner graph area dimensions
   const yAxisX = padding.left;
   const xAxisY = height - padding.bottom;
-  const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
 
   const maxValue = 70;

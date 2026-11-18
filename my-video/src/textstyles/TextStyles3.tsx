@@ -7,7 +7,7 @@ interface Props {
 
 export const TextStyles3: React.FC<Props> = ({ text = 'INITIALIZING SYSTEM ARCHITECTURE...' }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { durationInFrames } = useVideoConfig();
 
   // Typing speed: 2 frames per character
   const charsToShow = Math.floor(frame / 2);

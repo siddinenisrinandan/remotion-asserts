@@ -63,7 +63,12 @@ export const Callout5: React.FC<Props> = ({
   const lineAngle = (Math.atan2(lineDeltaY, lineDeltaX) * 180) / Math.PI;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: 'transparent', fontFamily: 'Montserrat, Arial, sans-serif' }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: 'transparent',
+        fontFamily: 'Courier New'
+      }}
+    >
       
       {/* 1. Target Circle Node */}
       <div

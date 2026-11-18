@@ -19,7 +19,15 @@ export const Callout10: React.FC<Props> = ({
   const opacity = frame >= durationInFrames - 35 ? interpolate(outro, [0, 1], [1, 0]) : interpolate(intro, [0, 1], [0, 1]);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: 'transparent',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#ffffff'
+      }}
+    >
       <div style={{ position: 'relative', width: 400, height: 180, opacity, transform: `scale(${scale})` }}>
         
         {/* Offset Shadow Diamond */}

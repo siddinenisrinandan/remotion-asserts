@@ -2,20 +2,40 @@
   "name": "my-video",
   "version": "1.0.0",
   "scripts": {
-    "start": "remotion preview",
-    "build": "remotion render src/index.ts Exploded3DPieChart out/video.mp4"
+    "dev": "remotion studio",
+    "start": "remotion studio",
+    "build": "remotion render src/index.ts Exploded3DPieChart out/Exploded3DPieChart.mp4",
+    "compositions": "remotion compositions src/index.ts",
+    "typecheck": "tsc",
+    "lint": "eslint src && tsc"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",
+    "@remotion/captions": "4.0.540",
     "@remotion/cli": "^4.0.540",
+    "@remotion/google-fonts": "^4.0.540",
+    "@remotion/install-whisper-cpp": "4.0.540",
+    "@remotion/media": "4.0.540",
+    "@remotion/paths": "4.0.540",
+    "@remotion/player": "4.0.540",
+    "@remotion/renderer": "4.0.540",
+    "@remotion/transitions": "4.0.540",
+    "@remotion/zod-types": "^4.0.540",
+    "d3-shape": "^3.2.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "remotion": "^4.0.540",
-    "three": "^0.187.0"
+    "three": "^0.187.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@remotion/eslint-config-flat": "^4.0.540",
+    "@types/d3-shape": "^3.2.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@types/three": "^0.187.0"
+    "@types/three": "^0.187.0",
+    "eslint": "^10.15.0",
+    "prettier": "^3.10.1",
+    "typescript": "^5.9.3"
   }
 }
