@@ -5,3 +5,15 @@ dist
 
 # Ignore the output video from Git but not videos you import into src/.
 out
+
+# MODNet model downloads automatically (tools/matting/modnet_cutout.py)
+tools/matting/models/*.onnx
+public/*.partial
+.venv
+
+# Local test footage and generated cut-outs (never commit)
+public/test*.mp4
+public/test video*
+public/stairs_short*
+public/*_person.webm
+desktop.ini
