@@ -27,6 +27,7 @@ import {
 } from './icons/IconExplainer';
 import { IconLibrary } from './icons/IconLibrary';
 import { GOV_SPENDING_DURATION, GovSpendingVideo } from './projects/GovSpendingVideo';
+import { CONTENT_GLASS_DURATION, ContentCreationGlass } from './projects/ContentCreationGlass';
 import {
   calculateStickerCaptionsMetadata,
   StickerCaptions,
@@ -57,6 +58,45 @@ import { CAPTION_PRESETS } from './captions/captionPresets';
 import { DepthTitles, depthTitlesSchema } from './depthtitles/DepthTitles';
 import { DEPTH_PRESETS, DEPTH_REEL_FRAMES, DepthTitlesReel } from './depthtitles/depthPresets';
 import { RgbText, rgbTextSchema } from './rgbtext/RgbText';
+import { LIQUID_GLASS_PRESETS, LiquidGlassTitle, liquidGlassSchema } from './liquidglass/LiquidGlass';
+import { GlassCard, glassCardDefaults, glassCardSchema } from './liquidglass/GlassCard';
+import { GlassSidePanel, glassSidePanelDefaults, glassSidePanelSchema } from './liquidglass/GlassSidePanel';
+import { GlassDome, glassDomeDefaults, glassDomeSchema } from './liquidglass/GlassDome';
+import { GlassWordSelector, glassWordSelectorSchema, WORD_SELECTOR_PRESETS } from './liquidglass/GlassWordSelector';
+import { GLASS_BUTTON_PRESETS, GlassButtons, glassButtonsSchema } from './liquidglass/GlassButtons';
+import { FACE_CAM_PRESETS, GlassFaceCam, glassFaceCamSchema } from './liquidglass/GlassFaceCam';
+import { GlassScreen, glassScreenDefaults, glassScreenSchema } from './liquidglass/GlassScreen';
+import { GLASS_STATS_PRESETS, GlassStats, glassStatsSchema } from './liquidglass/GlassStats';
+import {
+  GlassBottomBar,
+  glassBottomBarDefaults,
+  glassBottomBarSchema,
+  GlassRightPanel,
+  glassRightPanelDefaults,
+  glassRightPanelSchema,
+} from './liquidglass/GlassPanels';
+import { SEARCH_BAR_PRESETS, SearchBar, searchBarSchema, SearchBarsGrid } from './searchbars/SearchBar';
+import { PIXEL_BUTTON_PRESETS, PixelButton, pixelButtonSchema } from './pixelui/PixelButton';
+import { PIXEL_ICON_PRESETS, PixelIcon, pixelIconSchema } from './pixelui/PixelIcon';
+import { PixelUIGrid } from './pixelui/PixelUIGrid';
+import { GOLD_TEXT_PRESETS, GoldText, goldTextSchema } from './goldtheme/GoldText';
+import { HexBadgeWhitePreview, HexMotionLogoFinal, HexMotionLogoSheet } from './brand/HexMotionLogo';
+import { RETRO_PRESETS, RetroTitle, retroSchema } from './retro/RetroTitles';
+import { GOLD_INFO_PRESETS, GoldInfographic, goldInfoSchema } from './goldtheme/GoldInfographics';
+import { GOLD_CONTENT_PRESETS, GoldContentCard, goldContentCardSchema } from './goldtheme/GoldContentCard';
+import { GOLD_ON_VIDEO_FRAMES, GoldOnVideo, goldOnVideoDefaults, goldOnVideoSchema } from './goldtheme/GoldOnVideo';
+import { GOLD_REEL_FRAMES, GOLD_TITLE_PRESETS, GoldTitle, goldTitleSchema, GoldTitlesReel } from './goldtheme/GoldTitles';
+import {
+  calculatePixelTransitionMetadata,
+  PIXEL_TRANSITION_NAMES,
+  PIXEL_TRANSITION_PRESETS,
+  PixelTransition,
+  pixelTransitionDefaults,
+  pixelTransitionId,
+  pixelTransitionSchema,
+} from './pixeltransitions/PixelTransition';
+import { PIXEL_TX_REEL_FRAMES, PixelTransitionsReel } from './pixeltransitions/PixelTransitionsReel';
+import { PIXEL_TITLE_PRESETS, PIXEL_TITLES_REEL_FRAMES, pixelTitleSchema, PixelTitlesReel } from './pixeltitles';
 import {
   MINIMAL_PRESETS,
   MINIMAL_REEL_FRAMES,
@@ -155,6 +195,14 @@ export const RemotionRoot: React.FC = () => {
           id="GovSpendingVideo"
           component={GovSpendingVideo}
           durationInFrames={GOV_SPENDING_DURATION}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        <Composition
+          id="ContentCreationGlass"
+          component={ContentCreationGlass}
+          durationInFrames={CONTENT_GLASS_DURATION}
           fps={FPS}
           width={WIDTH}
           height={HEIGHT}
@@ -370,6 +418,328 @@ export const RemotionRoot: React.FC = () => {
           width={WIDTH}
           height={HEIGHT}
         />
+      </Folder>
+      <Folder name="Glass-Stats">
+        {GLASS_STATS_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GlassStats}
+            schema={glassStatsSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={180}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Glass-FaceCam">
+        <Composition
+          id="GlassScreen-16x9"
+          component={GlassScreen}
+          schema={glassScreenSchema}
+          defaultProps={glassScreenDefaults}
+          calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+          durationInFrames={240}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        {FACE_CAM_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GlassFaceCam}
+            schema={glassFaceCamSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={240}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Glass-Buttons">
+        {GLASS_BUTTON_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GlassButtons}
+            schema={glassButtonsSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={150}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Glass-Words">
+        {WORD_SELECTOR_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GlassWordSelector}
+            schema={glassWordSelectorSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={240}
+            fps={FPS}
+            width={preset.vertical ? 1080 : WIDTH}
+            height={preset.vertical ? 1920 : HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Liquid-Glass">
+        <Composition
+          id="LiquidGlass-10-Dome"
+          component={GlassDome}
+          schema={glassDomeSchema}
+          defaultProps={glassDomeDefaults}
+          calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+          durationInFrames={240}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        <Composition
+          id="LiquidGlass-08-Bottom-Bar"
+          component={GlassBottomBar}
+          schema={glassBottomBarSchema}
+          defaultProps={glassBottomBarDefaults}
+          calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+          durationInFrames={240}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        <Composition
+          id="LiquidGlass-09-Right-Panel"
+          component={GlassRightPanel}
+          schema={glassRightPanelSchema}
+          defaultProps={glassRightPanelDefaults}
+          calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+          durationInFrames={240}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        <Composition
+          id="LiquidGlass-07-Side-Panel"
+          component={GlassSidePanel}
+          schema={glassSidePanelSchema}
+          defaultProps={glassSidePanelDefaults}
+          calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+          durationInFrames={210}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        <Composition
+          id="LiquidGlass-06-Glass-Card"
+          component={GlassCard}
+          schema={glassCardSchema}
+          defaultProps={glassCardDefaults}
+          calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+          durationInFrames={240}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        {LIQUID_GLASS_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={LiquidGlassTitle}
+            schema={liquidGlassSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={258}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Brand">
+        <Composition id="HexMotion-LogoSheet" component={HexMotionLogoSheet} durationInFrames={30} fps={FPS} width={WIDTH} height={HEIGHT} />
+        <Composition id="HexMotion-LogoFinal" component={HexMotionLogoFinal} durationInFrames={30} fps={FPS} width={1024} height={1024} />
+        <Composition id="HexMotion-BadgeWhite" component={HexBadgeWhitePreview} durationInFrames={30} fps={FPS} width={WIDTH} height={HEIGHT} />
+      </Folder>
+      <Folder name="Retro">
+        {RETRO_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={RetroTitle}
+            schema={retroSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={150}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Gold-Infographics">
+        {GOLD_INFO_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GoldInfographic}
+            schema={goldInfoSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={210}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Gold-Titles">
+        <Composition
+          id="GoldTitles-OnVideo"
+          component={GoldOnVideo}
+          schema={goldOnVideoSchema}
+          defaultProps={goldOnVideoDefaults}
+          durationInFrames={GOLD_ON_VIDEO_FRAMES}
+          fps={FPS}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+        {GOLD_CONTENT_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GoldContentCard}
+            schema={goldContentCardSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={210}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+        <Composition id="GoldTitlesReel" component={GoldTitlesReel} durationInFrames={GOLD_REEL_FRAMES} fps={FPS} width={WIDTH} height={HEIGHT} />
+        {GOLD_TITLE_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GoldTitle}
+            schema={goldTitleSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={120}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Gold-Theme">
+        {GOLD_TEXT_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={GoldText}
+            schema={goldTextSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={150}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Pixel-Transitions">
+        <Composition id="PixelTransitionsReel" component={PixelTransitionsReel} durationInFrames={PIXEL_TX_REEL_FRAMES} fps={FPS} width={WIDTH} height={HEIGHT} />
+        {PIXEL_TRANSITION_NAMES.map((name) => (
+          <Composition
+            key={name}
+            id={pixelTransitionId(name)}
+            component={PixelTransition}
+            schema={pixelTransitionSchema}
+            defaultProps={{ ...pixelTransitionDefaults, ...PIXEL_TRANSITION_PRESETS[name], transition: name }}
+            calculateMetadata={calculatePixelTransitionMetadata}
+            durationInFrames={120}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Pixel-Titles">
+        <Composition id="PixelTitlesReel" component={PixelTitlesReel} durationInFrames={PIXEL_TITLES_REEL_FRAMES} fps={FPS} width={WIDTH} height={HEIGHT} />
+        {PIXEL_TITLE_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={preset.component}
+            schema={pixelTitleSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={120}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Pixel-UI">
+        <Composition id="PixelUIGrid" component={PixelUIGrid} durationInFrames={210} fps={FPS} width={WIDTH} height={HEIGHT} />
+        {PIXEL_BUTTON_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={PixelButton}
+            schema={pixelButtonSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={90}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+        {PIXEL_ICON_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={PixelIcon}
+            schema={pixelIconSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={90}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
+      </Folder>
+      <Folder name="Search-Bars">
+        <Composition id="SearchBarsGrid" component={SearchBarsGrid} durationInFrames={240} fps={FPS} width={WIDTH} height={HEIGHT} />
+        {SEARCH_BAR_PRESETS.map((preset) => (
+          <Composition
+            key={preset.id}
+            id={preset.id}
+            component={SearchBar}
+            schema={searchBarSchema}
+            defaultProps={preset.props}
+            calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.seconds * FPS) })}
+            durationInFrames={165}
+            fps={FPS}
+            width={WIDTH}
+            height={HEIGHT}
+          />
+        ))}
       </Folder>
       <Folder name="Minimal-Titles">
         <Composition id="MinimalTitlesReel" component={MinimalTitlesReel} durationInFrames={MINIMAL_REEL_FRAMES} fps={FPS} width={WIDTH} height={HEIGHT} />

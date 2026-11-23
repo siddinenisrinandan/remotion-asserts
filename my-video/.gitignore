@@ -17,3 +17,6 @@ public/test video*
 public/stairs_short*
 public/*_person.webm
 desktop.ini
+
+# Local background clips
+public/bg_*.mp4
