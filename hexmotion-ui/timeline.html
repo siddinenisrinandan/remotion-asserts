@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HexMotion Timeline</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add("embed");</script>
+<style>
+  .embed body{padding:0;background:#fff}
+  .embed .pagehead,.embed .hint{display:none}
+  .embed .tb{flex-wrap:nowrap;overflow-x:auto}
+  .embed .tb .grp{flex:none}
+  .embed .tl{border:none;border-radius:0;max-width:none;box-shadow:none}
+  :root{
+    --bg:#F4F4F6; --panel:#FFFFFF; --line:#E4E4E8; --line2:#EDEDF0;
+    --text:#1F1F23; --muted:#6B6B73; --faint:#9A9AA2;
+    --red:#E5383B; --redbg:#FFF1F1; --blue:#2F6FEB; --bluebg:#EAF1FF;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);padding:40px 24px}
+  h1{font-size:18px;font-weight:600;margin:0 0 4px}
+  p.sub{margin:0 0 18px;color:var(--muted);font-size:13px}
+  .tl{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;max-width:1200px;margin:auto;box-shadow:0 4px 18px rgba(0,0,0,.04)}
+  .tb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .grp{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;align-items:center}
+  .lbl{font-size:11px;color:var(--faint);padding:0 6px}
+  .ic{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:18px;color:var(--muted);cursor:pointer;border:none;background:none;position:relative}
+  .ic:hover{background:#F2F2F5;color:var(--text)}
+  .ic.on{background:var(--bluebg);color:var(--blue)}
+  .ic.ai{color:var(--red)}
+  .ic.sel{outline:2px solid var(--red);outline-offset:1px}
+  .zoom{display:flex;align-items:center;gap:2px}
+  .zoom input{width:90px;accent-color:var(--muted)}
+  .row{display:flex;height:38px;border-bottom:1px solid var(--line2)}
+  .hd{width:170px;flex:none;display:flex;align-items:center;gap:4px;padding:0 8px;font-size:13px;color:var(--muted);border-right:1px solid var(--line)}
+  .hd .ic{width:26px;height:26px;font-size:16px}
+  .hd .name{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .lane{position:relative;flex:1}
+  .clip{position:absolute;top:5px;bottom:5px;border-radius:6px;font-size:12px;padding:0 8px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;cursor:pointer;border:1px solid transparent}
+  .clip:hover{border-color:rgba(0,0,0,.18)}
+  .ruler{height:30px;background:#FAFAFB}
+  .time{font-family:Consolas,monospace;font-size:13px;color:var(--text);cursor:pointer}
+  .tick{position:absolute;top:8px;font-size:11px;color:var(--faint)}
+  .range{position:absolute;top:0;height:5px;background:var(--blue);opacity:.45;cursor:pointer;border-radius:0 0 3px 3px}
+  .pin{position:absolute;top:5px;font-size:16px;color:#E39A10;cursor:pointer;transform:translateX(-50%)}
+  .playhead{position:absolute;top:0;bottom:0;width:2px;background:var(--red);cursor:pointer}
+  .playhead::before{content:"";position:absolute;top:-1px;left:-5px;border:6px solid transparent;border-top:8px solid var(--red)}
+  .add{display:flex;align-items:center;gap:8px;padding:9px 12px;font-size:13px;color:var(--muted);cursor:pointer}
+  .add:hover{color:var(--text)}
+  .wave{letter-spacing:-1px;margin-left:8px;opacity:.7}
+  .row.arow{height:52px}
+  .clip.audio{align-items:flex-end;padding-bottom:4px}
+  .clip.audio .cname{position:absolute;top:3px;left:8px;font-size:11px;z-index:2}
+  .vol{position:absolute;left:0;right:0;height:12px;margin-top:-6px;cursor:ns-resize;z-index:3}
+  .vol::before{content:"";position:absolute;left:0;right:0;top:5px;height:2px;background:currentColor;opacity:.75}
+  .vol:hover::before,.vol.drag::before{opacity:1;height:3px;top:4px}
+  .vol .vl{position:absolute;right:6px;top:-3px;font-size:11px;background:#1F1F23;color:#fff;padding:1px 6px;border-radius:5px;display:none;white-space:nowrap}
+  .vol:hover .vl,.vol.drag .vl{display:block}
+  .xh{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;background:#fff;border:1.5px dashed #B4B2A9;border-radius:5px;z-index:4;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888780;transition:transform .12s}
+  .xh:hover,.xh.over{transform:scale(1.35);border-color:var(--red);color:var(--red)}
+  .xh.filled{border:none;background:var(--red);color:#fff;width:22px;height:22px;margin:-11px 0 0 -11px}
+  .xh.filled.gold{background:linear-gradient(160deg,#f6dd96,#c8973c 55%,#8d6420)}
+  .tray{border-top:1px solid var(--line);padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tray .tt{font-size:12px;color:var(--muted);margin-right:4px}
+  .chip{display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 10px;border:1px solid var(--line);border-radius:999px;cursor:grab;background:#fff;user-select:none}
+  .chip:hover{border-color:#B4B2A9}
+  .chip .sw{width:10px;height:10px;border-radius:3px}
+  .chip.picked{border-color:var(--red);background:var(--redbg);color:#A32D2D;box-shadow:0 0 0 2px #F7C1C1}
+  .chip.more{cursor:pointer;color:var(--muted)}
+  .xh.ready{border-color:var(--red);color:var(--red);animation:pulse 1s infinite}
+  @keyframes pulse{50%{transform:scale(1.35)}}
+  .picker{position:fixed;width:360px;max-height:min(380px,calc(100vh - 20px));overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:12px;z-index:40;display:none}
+  .picker h4{margin:8px 0 6px;font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.5px}
+  .picker .list{display:flex;flex-wrap:wrap;gap:6px}
+  .picker .chip{cursor:pointer}
+  .picker .rm{margin-top:10px;font-size:12px;color:var(--red);cursor:pointer;display:none;align-items:center;gap:4px}
+  .ic.del{background:var(--redbg);color:var(--red);border:1px solid #F7C1C1}
+  .ic.del:hover{background:#FFE1E1;color:#C42326}
+  .clip.picked-scene{outline:2px solid var(--red);outline-offset:-1px}
+  .txb{position:absolute;top:3px;bottom:3px;z-index:4;border-radius:6px;display:flex;align-items:center;gap:4px;padding:0 8px;font-size:11px;color:#fff;cursor:grab;overflow:hidden;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.18);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.14) 0 6px,transparent 6px 12px)}
+  .txb.basic{background-color:#5F5E5A}.txb.pixel{background-color:#E5383B}
+  .txb.gold{background-color:#B0812F}
+  .txb.drag{cursor:grabbing;opacity:.85}.txb.blocked{outline:2px dashed #E5383B}
+  .txb i{font-size:13px}.txb .tn{overflow:hidden;text-overflow:ellipsis}
+  .txb .eh{position:absolute;top:0;bottom:0;width:6px;cursor:ew-resize;background:rgba(255,255,255,.35)}
+  .txb .eh.l{left:0}.txb .eh.r{right:0}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#1F1F23;color:#fff;font-size:13px;padding:8px 14px;border-radius:9px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .pkh{display:flex;align-items:center;gap:6px;font-size:13px}.pkh i{color:var(--red)}.pkh span{margin-left:auto;color:var(--muted);font-size:12px}
+  .pked{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted)}
+  .pked label{display:flex;align-items:center;gap:8px}.pked input{flex:1;accent-color:var(--red)}.pked b{color:var(--text);min-width:32px}
+  .pked select{margin-left:auto;font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:6px}
+  .pked .rm{display:flex}
+  .vfill{position:absolute;left:0;right:0;bottom:0;background:currentColor;opacity:.08;pointer-events:none}
+
+  /* hover tooltip */
+  .tip{position:fixed;pointer-events:none;background:#1F1F23;color:#fff;font-size:12px;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;transition:opacity .12s;z-index:20}
+  /* click popup */
+  .pop{position:fixed;width:280px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:14px 16px;z-index:30;display:none}
+  .pop .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .pop .badge{width:34px;height:34px;border-radius:9px;background:var(--redbg);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:19px;flex:none}
+  .pop .t{font-weight:600;font-size:14px}
+  .pop .g{font-size:11px;color:var(--faint)}
+  .pop .k{margin-left:auto;font-family:Consolas,monospace;font-size:11px;border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--muted)}
+  .pop .d{font-size:13px;line-height:1.5;color:#3A3A40;margin:0}
+  .pop .x{position:absolute;top:8px;right:10px;cursor:pointer;color:var(--faint);font-size:16px;display:none}
+  .hint{max-width:1200px;margin:14px auto 0;font-size:12px;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="pagehead" style="max-width:1200px;margin:auto">
+  <h1>HexMotion timeline</h1>
+  <p class="sub">Click any tool, icon or clip to see what it does.</p>
+</div>
+
+<div class="tl" id="tl">
+  <div class="tb">
+    <div class="grp"><span class="lbl">Tools</span>
+      <button class="ic on" data-k="select"><i class="ti ti-pointer"></i></button>
+      <button class="ic" data-k="blade"><i class="ti ti-cut"></i></button>
+      <button class="ic" data-k="hand"><i class="ti ti-hand-stop"></i></button>
+      <button class="ic" data-k="range"><i class="ti ti-arrows-horizontal"></i></button>
+    </div>
+    <div class="grp"><span class="lbl">Clip</span>
+      <button class="ic" data-k="split"><i class="ti ti-column-insert-right"></i></button>
+      <button class="ic del" data-k="delete"><i class="ti ti-trash"></i></button>
+      <button class="ic" data-k="duplicate"><i class="ti ti-copy"></i></button>
+      <button class="ic" data-k="replace"><i class="ti ti-replace"></i></button>
+      <button class="ic" data-k="speed"><i class="ti ti-gauge"></i></button>
+      <button class="ic" data-k="detach"><i class="ti ti-music-off"></i></button>
+      <button class="ic" data-k="freeze"><i class="ti ti-snowflake"></i></button>
+      <button class="ic" data-k="addtx"><i class="ti ti-transition-right"></i></button>
+    </div>
+    <div class="grp"><span class="lbl">Mark</span>
+      <button class="ic" data-k="marker"><i class="ti ti-map-pin"></i></button>
+      <button class="ic" data-k="comment"><i class="ti ti-message"></i></button>
+      <button class="ic" data-k="keyframe"><i class="ti ti-diamond"></i></button>
+    </div>
+    <div class="grp">
+      <button class="ic on" data-k="snap"><i class="ti ti-magnet"></i></button>
+      <button class="ic on" data-k="ripple"><i class="ti ti-arrow-bar-to-left"></i></button>
+      <button class="ic on" data-k="link"><i class="ti ti-link"></i></button>
+      <button class="ic" data-k="follow"><i class="ti ti-player-track-next"></i></button>
+    </div>
+    <div class="grp"><button class="ic ai" data-k="ai"><i class="ti ti-sparkles"></i></button></div>
+    <div class="grp">
+      <button class="ic" data-k="undo"><i class="ti ti-arrow-back-up"></i></button>
+      <button class="ic" data-k="redo"><i class="ti ti-arrow-forward-up"></i></button>
+    </div>
+    <div class="grp zoom" style="margin-left:auto">
+      <button class="ic" data-k="fit"><i class="ti ti-arrows-minimize"></i></button>
+      <button class="ic" data-k="zoomout"><i class="ti ti-zoom-out"></i></button>
+      <input type="range" min="0" max="10" value="5" data-k="zoomslider">
+      <button class="ic" data-k="zoomin"><i class="ti ti-zoom-in"></i></button>
+    </div>
+  </div>
+
+  <div class="row ruler">
+    <div class="hd"><span class="time" data-k="timecode">00:01:30:15</span></div>
+    <div class="lane">
+      <span class="tick" style="left:2%">0s</span><span class="tick" style="left:27%">5s</span>
+      <span class="tick" style="left:52%">10s</span><span class="tick" style="left:77%">15s</span>
+      <div class="range" data-k="inout" style="left:12%;right:40%"></div>
+      <i class="ti ti-map-pin pin" data-k="pin" style="left:44%"></i>
+    </div>
+  </div>
+
+  <div style="position:relative">
+    <div class="row"><div class="hd">
+      <button class="ic" data-k="eye"><i class="ti ti-eye"></i></button>
+      <button class="ic" data-k="lock"><i class="ti ti-lock-open"></i></button>
+      <span class="name" data-k="trackText"><i class="ti ti-typography"></i>Text</span></div>
+      <div class="lane"><div class="clip" data-k="clipTitle" style="left:25%;width:28%;background:#EEEDFE;color:#3C3489">Gold title</div></div></div>
+
+    <div class="row"><div class="hd">
+      <button class="ic" data-k="eye"><i class="ti ti-eye"></i></button>
+      <button class="ic" data-k="lock"><i class="ti ti-lock-open"></i></button>
+      <span class="name" data-k="trackOverlay"><i class="ti ti-sticker"></i>Overlay</span></div>
+      <div class="lane">
+        <div class="clip" data-k="clipOverlay" style="left:5%;width:22%;background:#E1F5EE;color:#085041">Card</div>
+        <div class="clip" data-k="clipOverlay" style="left:60%;width:30%;background:#E1F5EE;color:#085041">Infographic</div></div></div>
+
+    <div class="row"><div class="hd">
+      <button class="ic" data-k="eye"><i class="ti ti-eye"></i></button>
+      <button class="ic" data-k="lock"><i class="ti ti-lock-open"></i></button>
+      <span class="name" data-k="trackVideo"><i class="ti ti-movie"></i>Video</span></div>
+      <div class="lane">
+        <div class="clip" data-k="clipScene" style="left:0;width:42%;background:#F1EFE8;color:#444441">Scene 1</div>
+        <div class="clip" data-k="clipScene" style="left:42%;width:30%;background:#F1EFE8;color:#444441;padding-left:18px">Scene 2</div>
+        <div class="clip" data-k="clipScene" style="left:72%;width:28%;background:#F1EFE8;color:#444441;padding-left:18px">Scene 3</div>
+</div></div>
+
+    <div class="row arow"><div class="hd">
+      <button class="ic" data-k="mute"><i class="ti ti-volume"></i></button>
+      <button class="ic" data-k="solo"><i class="ti ti-headphones"></i></button>
+      <span class="name" data-k="trackVoice"><i class="ti ti-microphone"></i>Voice</span></div>
+      <div class="lane"><div class="clip audio" data-k="clipVoice" data-vol="100" style="left:3%;width:88%;background:#E6F1FB;color:#0C447C"><span class="cname">Voiceover</span><span class="wave">▁▃▅▂▆▃▁▄▆▂▅▃▁▂▅▃▆▂▄▁▃▅▂▆▃▁▄▆▂▅▃▁▂▅▃▆▂▄▁▃▅▂▆▃▁▄▆▂▅▃</span></div></div></div>
+
+    <div class="row arow"><div class="hd">
+      <button class="ic" data-k="mute"><i class="ti ti-volume"></i></button>
+      <button class="ic" data-k="solo"><i class="ti ti-headphones"></i></button>
+      <span class="name" data-k="trackMusic"><i class="ti ti-music"></i>Music</span></div>
+      <div class="lane"><div class="clip audio" data-k="clipMusic" data-vol="40" style="left:0;width:100%;background:#FBEAF0;color:#72243E"><span class="cname">Background music</span><span class="wave">▃▄▃▅▄▃▄▅▃▄▃▅▄▃▄▅▃▄▃▅▄▃▄▅▃▄▃▅▄▃▄▅▃▄▃▅▄▃▄▅▃▄▃▅▄▃▄▅▃▄▃▅▄▃▄▅▃▄▃▅▄▃▄▅▃▄</span></div></div></div>
+
+    <div class="row arow"><div class="hd">
+      <button class="ic" data-k="mute"><i class="ti ti-volume"></i></button>
+      <button class="ic" data-k="solo"><i class="ti ti-headphones"></i></button>
+      <span class="name" data-k="trackSfx"><i class="ti ti-bolt"></i>Sound FX</span></div>
+      <div class="lane">
+        <div class="clip audio" data-k="clipSfx" data-vol="80" style="left:24%;width:7%;background:#FAEEDA;color:#633806"><span class="cname">Whoosh</span><span class="wave">▁▅▇▃▁</span></div>
+        <div class="clip audio" data-k="clipSfx" data-vol="100" style="left:41%;width:5%;background:#FAEEDA;color:#633806"><span class="cname">Pop</span><span class="wave">▇▂▁</span></div>
+        <div class="clip audio" data-k="clipSfx" data-vol="60" style="left:59%;width:8%;background:#FAEEDA;color:#633806"><span class="cname">Shine</span><span class="wave">▂▄▆▄▂</span></div></div></div>
+
+    <div class="playhead" data-k="playhead" style="left:calc(170px + (100% - 170px) * 0.38)"></div>
+  </div>
+  <div class="add" data-k="addtrack"><i class="ti ti-plus"></i>Add track</div>
+</div>
+<div class="hint">Design preview only. Tools show what they do but don't edit anything yet.</div>
+
+<div class="tip" id="tip"></div>
+<div class="picker" id="picker"><div id="pkBody"></div></div>
+<div class="pop" id="pop">
+  <div class="top"><div class="badge" id="pIcon"></div><div><div class="t" id="pTitle"></div><div class="g" id="pGroup"></div></div><span class="k" id="pKey"></span></div>
+  <p class="d" id="pDesc"></p>
+</div>
+
+<script>
+const INFO = {
+  select:{t:"Select",g:"Tool",k:"V",i:"ti-pointer",d:"The normal pointer. Click a clip to select it, drag it to move it, and drag its edges to make it shorter or longer."},
+  blade:{t:"Blade",g:"Tool",k:"C",i:"ti-cut",d:"Turns the mouse into a knife. Click anywhere on a clip to cut it into two pieces at that spot."},
+  hand:{t:"Hand",g:"Tool",k:"H",i:"ti-hand-stop",d:"Drag the timeline left and right without moving any clips. Handy for long videos."},
+  range:{t:"Range select",g:"Tool",k:"R",i:"ti-arrows-horizontal",d:"Drag across the timeline to select every clip inside that area at once."},
+  split:{t:"Split at playhead",g:"Clip",k:"S",i:"ti-column-insert-right",d:"Cuts the selected clip exactly where the red playhead line is. The fastest way to cut."},
+  delete:{t:"Delete",g:"Clip",k:"Del",i:"ti-trash",d:"Removes the selected clip. With Ripple on, the clips after it slide left so no empty gap is left. It's red so you never press it by mistake."},
+  duplicate:{t:"Duplicate",g:"Clip",k:"Ctrl+D",i:"ti-copy",d:"Makes a copy of the selected clip right after it, with all its settings."},
+  replace:{t:"Replace",g:"Clip",k:"",i:"ti-replace",d:"Swap the selected clip for a different video, image or asset. The new one keeps the same place, length, effects and animations on the timeline."},
+  speed:{t:"Speed",g:"Clip",k:"Ctrl+R",i:"ti-gauge",d:"Makes the clip play slower or faster: 0.5×, 2×, or a smooth speed ramp."},
+  detach:{t:"Detach audio",g:"Clip",k:"",i:"ti-music-off",d:"Pulls the sound out of a video clip onto its own audio track, so you can edit or delete it separately."},
+  freeze:{t:"Freeze frame",g:"Clip",k:"",i:"ti-snowflake",d:"Holds the current frame still for a few seconds. Great for title moments or pauses."},
+  marker:{t:"Add marker",g:"Mark",k:"M",i:"ti-map-pin",d:"Drops a coloured pin on the ruler at the playhead. Use it to remember important moments."},
+  comment:{t:"Comment",g:"Mark",k:"",i:"ti-message",d:"Leave a note on the timeline, like “fix this later” or “add music here”."},
+  keyframe:{t:"Keyframe",g:"Mark",k:"K",i:"ti-diamond",d:"Adds an animation point. Set two keyframes with different position, size or volume and HexMotion animates between them."},
+  snap:{t:"Snapping",g:"Switch · on",k:"N",i:"ti-magnet",d:"Clips stick to the playhead, other clip edges, markers and music beats when you drag them close. A small line flashes when it snaps."},
+  ripple:{t:"Ripple edit",g:"Switch · on",k:"",i:"ti-arrow-bar-to-left",d:"When you delete or shorten a clip, everything after it moves left automatically so there are no gaps."},
+  link:{t:"Linked selection",g:"Switch · on",k:"",i:"ti-link",d:"A video and its own sound move together. Turn it off to move them separately."},
+  follow:{t:"Auto-scroll",g:"Switch · off",k:"",i:"ti-player-track-next",d:"While the video plays, the timeline scrolls so the playhead always stays in view."},
+  ai:{t:"HexMotion AI",g:"AI",k:"",i:"ti-sparkles",d:"Opens AI helpers: remove silences, put markers on music beats, lower music under the voice, and make captions automatically."},
+  undo:{t:"Undo",g:"History",k:"Ctrl+Z",i:"ti-arrow-back-up",d:"Takes back your last change."},
+  redo:{t:"Redo",g:"History",k:"Ctrl+Y",i:"ti-arrow-forward-up",d:"Brings back a change you just undid."},
+  fit:{t:"Zoom to fit",g:"View",k:"Shift+Z",i:"ti-arrows-minimize",d:"Zooms so the whole video fits in the timeline at once."},
+  zoomout:{t:"Zoom out",g:"View",k:"−",i:"ti-zoom-out",d:"See more of the video, with less detail."},
+  zoomin:{t:"Zoom in",g:"View",k:"+",i:"ti-zoom-in",d:"See less of the video, with more detail. Useful for frame-exact cuts."},
+  zoomslider:{t:"Zoom slider",g:"View",k:"",i:"ti-adjustments-horizontal",d:"Drag to zoom the timeline smoothly in or out."},
+  timecode:{t:"Timecode",g:"Ruler",k:"",i:"ti-clock",d:"Where the playhead is: hours : minutes : seconds : frames. 30 frames make one second."},
+  inout:{t:"In / out range",g:"Ruler",k:"I / O",i:"ti-brackets",d:"The blue bar marks a part of the video. Preview or export only that part."},
+  pin:{t:"Marker",g:"Ruler",k:"",i:"ti-map-pin",d:"A saved moment. Double-click it to give it a name and colour; clips snap to it."},
+  playhead:{t:"Playhead",g:"Timeline",k:"Space",i:"ti-line",d:"The red line shows the frame you see in the preview. Drag it to move through the video; Space plays from here."},
+  eye:{t:"Show / hide track",g:"Track",k:"",i:"ti-eye",d:"Hides everything on this track from the preview and export, without deleting it."},
+  lock:{t:"Lock track",g:"Track",k:"",i:"ti-lock-open",d:"Locks the track so its clips can't be moved or changed by accident."},
+  mute:{t:"Mute",g:"Track",k:"",i:"ti-volume",d:"Silences this audio track."},
+  solo:{t:"Solo",g:"Track",k:"",i:"ti-headphones",d:"Plays only this track and mutes all the others, so you can hear it clearly."},
+  trackText:{t:"Text track",g:"Track",k:"",i:"ti-typography",d:"Titles, captions and text animations live here. Right-click to rename or change colour."},
+  trackOverlay:{t:"Overlay track",g:"Track",k:"",i:"ti-sticker",d:"Cards, infographics, stickers and effects that sit on top of the video."},
+  trackVideo:{t:"Video track",g:"Track",k:"",i:"ti-movie",d:"The main scenes of your video, one after another."},
+  trackVoice:{t:"Voice track",g:"Track",k:"",i:"ti-microphone",d:"Your voiceover or narration. The bars show how loud it is."},
+  trackMusic:{t:"Music track",g:"Track",k:"",i:"ti-music",d:"Background music. With auto-duck it gets quieter whenever someone speaks."},
+  clipTitle:{t:"Title clip",g:"Clip",k:"",i:"ti-typography",d:"A gold title. Select it to edit the words, style and timing in the Properties panel."},
+  clipOverlay:{t:"Overlay clip",g:"Clip",k:"",i:"ti-sticker",d:"A card or infographic shown on top of the scene. Drag the edges to change how long it stays."},
+  clipScene:{t:"Scene clip",g:"Clip",k:"",i:"ti-movie",d:"One scene from your script. Click to select it, then use the transition icon to add a transition after it."},
+  clipVoice:{t:"Voice clip",g:"Clip",k:"",i:"ti-microphone",d:"Recorded or AI voice. The waveform helps you see where words start and stop."},
+  clipMusic:{t:"Music clip",g:"Clip",k:"",i:"ti-music",d:"The song playing under your video. Add keyframes to fade it in or out."},
+  trackSfx:{t:"Sound FX track",g:"Track",k:"",i:"ti-bolt",d:"Short sound effects like whooshes, pops and shines that go with transitions and titles."},
+  clipSfx:{t:"Sound effect",g:"Clip",k:"",i:"ti-bolt",d:"A short sound. Put it right where a title or transition starts so they hit together."},
+  addtx:{t:"Add transition",g:"Clip",k:"T",i:"ti-transition-right",d:"Select a scene on the timeline, then press this. A Fade is added on the right side of that scene. Click the transition to pick a different one, change its length or ease, drag it to another cut, or drag its edges."},
+  vol:{t:"Volume line",g:"Audio",k:"",i:"ti-volume",d:"Drag the line up to make this clip louder, down to make it quieter. 100% is the original volume; you can go up to 150% or down to silent. Double-click to reset to 100%."},
+  addtrack:{t:"Add track",g:"Timeline",k:"",i:"ti-plus",d:"Adds a new empty track for more text, overlays, video or audio layers."}
+};
+
+// volume lines: 0% at the bottom, 150% at the top of the clip
+const MAXV = 150;
+document.querySelectorAll('.clip.audio').forEach(clip => {
+  const fill = document.createElement('div'); fill.className = 'vfill';
+  const line = document.createElement('div'); line.className = 'vol'; line.dataset.k = 'vol';
+  line.innerHTML = '<span class="vl"></span>';
+  clip.append(fill, line);
+  const set = v => {
+    v = Math.max(0, Math.min(MAXV, Math.round(v)));
+    clip.dataset.vol = v;
+    const pct = 100 - (v / MAXV) * 100;
+    line.style.top = pct + '%';
+    fill.style.top = pct + '%';
+    line.querySelector('.vl').textContent = v === 0 ? 'Muted' : v + '%';
+  };
+  set(+clip.dataset.vol);
+  let moved = false;
+  line.addEventListener('mousedown', e => {
+    e.preventDefault(); e.stopPropagation(); moved = false;
+    line.classList.add('drag'); hidePop(); tip.style.opacity = 0;
+    const move = ev => {
+      moved = true;
+      const r = clip.getBoundingClientRect();
+      set((1 - (ev.clientY - r.top) / r.height) * MAXV);
+    };
+    const up = () => { line.classList.remove('drag'); removeEventListener('mousemove', move); removeEventListener('mouseup', up); };
+    addEventListener('mousemove', move); addEventListener('mouseup', up);
+  });
+  line.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.stopImmediatePropagation(); } }, true);
+  line.addEventListener('dblclick', e => { e.stopPropagation(); set(100); });
+});
+
+// ---------- transitions ----------
+// Select a scene, press the transition icon: a Fade is added on that scene's right edge.
+// Click a transition block to change its type, length and ease. Drag it to another cut,
+// or drag its edges to make it longer/shorter.
+const TX = {
+  'Basic': { kind:'basic', color:'#5F5E5A', items:['Fade','Crossfade','Dip to Black','Dip to White','Slide','Push','Zoom','Wipe'] },
+  'Pixel': { kind:'pixel', color:'#E5383B', items:['Corner Burst','Side Sweep','Diagonal Streak','Center Bloom','Rising Heat','Column Wipe','Ring Swirl','Corner Flare','Glitch Blocks','Mosaic Cut'] },
+  'Gold':  { kind:'gold',  color:'#B0812F', items:['Shine Sweep','Lens Flare'] }
+};
+const PCT_PER_SEC = 5;                       // ruler: 5 s every 25%
+const videoLane = document.querySelector('[data-k="clipScene"]').parentElement;
+const scenes = [...videoLane.querySelectorAll('[data-k="clipScene"]')];
+const cutOf = sc => parseFloat(sc.style.left) + parseFloat(sc.style.width);   // right edge in %
+const CUTS = scenes.slice(0, -1).map(cutOf);                                  // cuts that have a next scene
+const txAt = {};                                                              // cut -> transition state
+let selScene = null;
+
+const toast = document.createElement('div'); toast.className = 'toast'; document.body.append(toast);
+let toastT;
+function say(msg) { toast.textContent = msg; toast.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('show'), 2200); }
+
+// scene selection
+scenes.forEach(sc => sc.addEventListener('click', e => {
+  e.stopImmediatePropagation(); e.stopPropagation(); hidePop(); closePicker();
+  const same = selScene === sc;
+  scenes.forEach(s => s.classList.remove('picked-scene'));
+  selScene = same ? null : sc;
+  if (selScene) { selScene.classList.add('picked-scene'); say(sc.textContent.trim() + ' selected. Press the transition icon to add one on its right.'); }
+}));
+
+// toolbar transition icon
+document.querySelector('[data-k="addtx"]').addEventListener('click', e => {
+  if (!selScene) return;                    // nothing selected: the normal info popup explains it
+  e.stopImmediatePropagation(); e.stopPropagation();
+  const cut = cutOf(selScene);
+  if (!CUTS.includes(cut)) { say('This is the last scene, so there is nothing after it to transition to.'); return; }
+  if (txAt[cut]) { openPicker(txAt[cut]); return; }
+  addTx(cut, 'Fade', 'Basic', 1);
+  say('Fade added after ' + selScene.textContent.trim() + '. Click it to change it.');
+});
+
+function addTx(cut, name, group, dur) {
+  const el = document.createElement('div'); el.className = 'txb';
+  el.innerHTML = '<span class="eh l"></span><i class="ti ti-transition-right"></i><span class="tn"></span><span class="eh r"></span>';
+  videoLane.append(el);
+  const t = { el, cut, name, group, dur, ease:'Smooth' };
+  txAt[cut] = t; draw(t); wire(t); return t;
+}
+function draw(t) {
+  const w = t.dur * PCT_PER_SEC;
+  t.el.style.left = (t.cut - w / 2) + '%'; t.el.style.width = w + '%';
+  t.el.className = 'txb ' + TX[t.group].kind;
+  t.el.querySelector('.tn').textContent = t.name;
+  t.el.title = t.name + ' · ' + t.dur.toFixed(1) + 's';
+}
+function removeTx(t) { t.el.remove(); delete txAt[t.cut]; closePicker(); }
+
+function wire(t) {
+  const el = t.el;
+  el.addEventListener('click', e => e.stopPropagation());
+  el.addEventListener('contextmenu', e => { e.preventDefault(); removeTx(t); });
+  el.addEventListener('mousedown', e => {
+    e.preventDefault(); e.stopPropagation(); hidePop();
+    const edge = e.target.classList.contains('eh') ? (e.target.classList.contains('l') ? -1 : 1) : 0;
+    const lr = videoLane.getBoundingClientRect(), x0 = e.clientX, dur0 = t.dur;
+    let moved = false, target = t.cut;
+    el.classList.add('drag');
+    const move = ev => {
+      const dx = (ev.clientX - x0) / lr.width * 100;      // in %
+      if (Math.abs(ev.clientX - x0) > 3) moved = true;
+      if (!moved) return;
+      if (edge) {                                         // resize, stays centred on the cut
+        t.dur = Math.max(0.2, Math.min(3, dur0 + (edge * dx * 2) / PCT_PER_SEC));
+        t.dur = Math.round(t.dur * 10) / 10; draw(t);
+        say('Length ' + t.dur.toFixed(1) + 's');
+      } else {                                            // move to the nearest free cut
+        const x = t.cut + dx;
+        el.style.left = (x - t.dur * PCT_PER_SEC / 2) + '%';
+        target = CUTS.reduce((a, c) => Math.abs(c - x) < Math.abs(a - x) ? c : a, CUTS[0]);
+        el.classList.toggle('blocked', target !== t.cut && !!txAt[target]);
+      }
+    };
+    const up = () => {
+      removeEventListener('mousemove', move); removeEventListener('mouseup', up);
+      el.classList.remove('drag', 'blocked');
+      if (!moved) { openPicker(t); return; }
+      if (!edge && target !== t.cut) {
+        if (txAt[target]) say('That cut already has a transition.');
+        else { delete txAt[t.cut]; t.cut = target; txAt[target] = t; say(t.name + ' moved.'); }
+      }
+      draw(t);
+    };
+    addEventListener('mousemove', move); addEventListener('mouseup', up);
+  });
+}
+
+// editor popup
+const picker = document.getElementById('picker'), pkBody = document.getElementById('pkBody');
+let pkT = null;
+function openPicker(t) {
+  pkT = t; hidePop();
+  pkBody.innerHTML = '<div class="pkh"><i class="ti ti-transition-right"></i><b>Transition</b><span id="pkName"></span></div>';
+  Object.keys(TX).forEach(group => {
+    const h = document.createElement('h4'); h.textContent = group; pkBody.append(h);
+    const list = document.createElement('div'); list.className = 'list';
+    TX[group].items.forEach(n => {
+      const c = document.createElement('span'); c.className = 'chip' + (n === t.name ? ' picked' : '');
+      c.innerHTML = '<span class="sw" style="background:' + TX[group].color + '"></span>' + n;
+      c.addEventListener('click', () => {
+        t.name = n; t.group = group; draw(t);
+        pkBody.querySelectorAll('.chip').forEach(x => x.classList.toggle('picked', x === c));
+        document.getElementById('pkName').textContent = n;
+      });
+      list.append(c);
+    });
+    pkBody.append(list);
+  });
+  const ed = document.createElement('div'); ed.className = 'pked';
+  ed.innerHTML =
+    '<label>Length <input type="range" min="0.2" max="3" step="0.1" id="pkDur"><b id="pkDurV"></b></label>' +
+    '<label>Ease <select id="pkEase"><option>Smooth</option><option>Linear</option><option>Fast in</option><option>Fast out</option><option>Bounce</option></select></label>' +
+    '<div class="rm" id="pkRm"><i class="ti ti-trash"></i>Remove transition</div>';
+  pkBody.append(ed);
+  document.getElementById('pkName').textContent = t.name;
+  const dur = document.getElementById('pkDur'), durV = document.getElementById('pkDurV'), ease = document.getElementById('pkEase');
+  dur.value = t.dur; durV.textContent = t.dur.toFixed(1) + 's'; ease.value = t.ease;
+  dur.addEventListener('input', () => { t.dur = +dur.value; durV.textContent = t.dur.toFixed(1) + 's'; draw(t); });
+  ease.addEventListener('change', () => { t.ease = ease.value; });
+  document.getElementById('pkRm').addEventListener('click', () => removeTx(t));
+  picker.style.display = 'block';
+  const r = t.el.getBoundingClientRect();
+  let top = r.bottom + 10;
+  if (top + picker.offsetHeight > innerHeight - 10) top = Math.max(10, r.top - picker.offsetHeight - 10);
+  picker.style.left = Math.min(innerWidth - picker.offsetWidth - 12, Math.max(12, r.left + r.width / 2 - picker.offsetWidth / 2)) + 'px';
+  picker.style.top = top + 'px';
+}
+function closePicker() { picker.style.display = 'none'; pkT = null; }
+picker.addEventListener('click', e => e.stopPropagation());
+picker.addEventListener('mousedown', e => e.stopPropagation());
+document.addEventListener('click', closePicker);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePicker(); });
+
+const tip = document.getElementById('tip'), pop = document.getElementById('pop');
+let current = null;
+
+document.querySelectorAll('[data-k]').forEach(el => {
+  if (!INFO[el.dataset.k]) return;
+  el.addEventListener('mouseenter', () => {
+    const info = INFO[el.dataset.k];
+    tip.textContent = info.t + (info.k ? '  (' + info.k + ')' : '');
+    const r = el.getBoundingClientRect();
+    tip.style.left = Math.max(8, r.left + r.width / 2 - tip.offsetWidth / 2) + 'px';
+    tip.style.top = (r.top - 30) + 'px';
+    tip.style.opacity = 1;
+  });
+  el.addEventListener('mouseleave', () => tip.style.opacity = 0);
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    if (current === el) return hidePop();
+    showPop(el, INFO[el.dataset.k]);
+  });
+});
+
+function showPop(el, info) {
+  if (current) current.classList.remove('sel');
+  current = el; el.classList.add('sel');
+  document.getElementById('pIcon').innerHTML = '<i class="ti ' + info.i + '"></i>';
+  document.getElementById('pTitle').textContent = info.t;
+  document.getElementById('pGroup').textContent = info.g;
+  const k = document.getElementById('pKey');
+  k.textContent = info.k; k.style.display = info.k ? '' : 'none';
+  document.getElementById('pDesc').textContent = info.d;
+  pop.style.display = 'block';
+  const r = el.getBoundingClientRect();
+  let left = Math.min(window.innerWidth - pop.offsetWidth - 12, Math.max(12, r.left + r.width / 2 - pop.offsetWidth / 2));
+  let top = r.bottom + 10;
+  if (top + pop.offsetHeight > window.innerHeight - 10) top = r.top - pop.offsetHeight - 10;
+  pop.style.left = left + 'px'; pop.style.top = top + 'px';
+  tip.style.opacity = 0;
+}
+function hidePop() { pop.style.display = 'none'; if (current) current.classList.remove('sel'); current = null; }
+document.addEventListener('click', hidePop);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hidePop(); });
+window.addEventListener('scroll', hidePop); window.addEventListener('resize', hidePop);
+pop.addEventListener('click', e => e.stopPropagation());
+</script>
+</body>
+</html>
